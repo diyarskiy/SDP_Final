@@ -1,3 +1,9 @@
+import adapter.FlightProviderAdapter;
+import adapter.FlightRepository;
+import adapter.LegacyFlightService;
+import builder.TripBuilder;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import model.CarRental;
 import model.Flight;
@@ -8,27 +14,48 @@ import model.TripRequest;
 public class Main {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-        Flight[] flights = {
-            new Flight("TB101", "Air Astana", "Almaty", "Astana", 25000, 105),
-            new Flight("TB205", "Fly Arystan", "Almaty", "Astana", 32000, 90)
-        };
-        Hotel hotel = new Hotel("City Inn", "Astana", 18000, 3);
-        CarRental car = new CarRental("City Rent", "Kia Rio", 12000);
+        FlightProviderAdapter provider = new FlightProviderAdapter(new LegacyFlightService());
+        FlightRepository repository = new FlightRepository(provider);
+        List<Flight> flights = repository.getFlights();
+        Hotel hotel_ast = new Hotel("Ritz Carlton", "Astana", 18000, 3);
+        Hotel hotel_ala = new Hotel("Raddison Blue", "Almaty", 25000, 4);
+        CarRental car_ast = new CarRental("City Rent", "Kia Rio", 12000);
+        CarRental car_ala = new CarRental("Yandex", "Chevrolet Cobalt", 12500);
 
-        System.out.println("Almaty -> Astana (sample offers)");
-        for (int i = 0; i < flights.length; i++) {
-            Flight flight = flights[i];
+        Map<String, Hotel> hotels = Map.of(hotel_ast.getCity(), hotel_ast, hotel_ala.getCity(), hotel_ala);
+        Map<String, CarRental> rentals = Map.of("Astana", car_ast, "Almaty", car_ala);
+
+        System.out.println("Available flights:");
+        for (int i = 0; i < flights.size(); i++) {
+            Flight flight = flights.get(i);
             System.out.println((i + 1) + ". " + flight.getId() + " " + flight.getAirline()
-                    + ": " + flight.getPrice() + " KZT, " + flight.getDurationMinutes() + " min");
+                    + " (" + flight.getDepartureCity() + " -> " + flight.getDestination() + "): "
+                    + flight.getPrice() + " KZT, " + flight.getDurationMinutes() + " min");
         }
-        int number = readNumber(input, "Choose a flight", 1, flights.length);
+        int number = readNumber(input, "Choose a flight", 1, flights.size());
+        Flight selected = flights.get(number - 1);
+        String destination = selected.getDestination();
+        Hotel hotel = hotels.get(destination);
+        CarRental car = rentals.get(destination);
+        if (hotel == null) {
+            System.out.println("No hotel available in " + destination + ".");
+            return;
+        }
         System.out.println(hotel.getName() + ": " + hotel.getPricePerNight() + " KZT per night");
         int nights = readNumber(input, "Hotel nights", 1, 30);
-        System.out.println(car.getModel() + ": " + car.getPricePerDay() + " KZT per day");
-        int days = readNumber(input, "Rental days (0 for no car)", 0, nights);
-        TripRequest request = new TripRequest(hotel.getCity(), nights, days);
-        Flight selected = flights[number - 1];
-        Trip trip = new Trip(request, selected, hotel, days == 0 ? null : car);
+        int days = 0;
+        if (car != null) {
+            System.out.println(car.getCompany() + " - " + car.getModel() + ": " + car.getPricePerDay() + " KZT per day");
+            days = readNumber(input, "Rental days (0 for no car)", 0, nights);
+        } else {
+            System.out.println("No car rental available in " + destination + ".");
+        }
+        TripRequest request = new TripRequest(destination, nights, days);
+        TripBuilder builder = new TripBuilder(request).setFlight(selected).setHotel(hotel);
+        if (days > 0) {
+            builder.setCarRental(car);
+        }
+        Trip trip = builder.build();
 
         System.out.println("\nTrip to " + request.getDestination());
         System.out.println("Flight: " + selected.getId() + ", " + selected.getPrice() + " KZT");
