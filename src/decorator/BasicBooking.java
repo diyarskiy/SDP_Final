@@ -1,7 +1,7 @@
 package decorator;
 
 import java.util.Objects;
-import model.Trip;
+import builder.Trip;
 
 public class BasicBooking implements Booking {
     private final Trip trip;

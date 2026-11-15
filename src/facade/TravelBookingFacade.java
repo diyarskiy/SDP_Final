@@ -12,14 +12,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import model.CarRental;
-import model.Flight;
-import model.Hotel;
-import model.Trip;
-import model.TripRequest;
+import builder.CarRental;
+import adapter.Flight;
+import builder.Hotel;
+import builder.Trip;
+import builder.TripRequest;
 import observer.PriceTracker;
 import observer.UserPriceAlert;
-import service.BookingService;
 import strategy.CheapestStrategy;
 import strategy.FastestStrategy;
 import strategy.OfferSelector;
@@ -66,6 +65,9 @@ public class TravelBookingFacade {
 
     public void subscribeToPriceAlerts(String userName) {
         requirePriceTracker();
+        if (alerts.containsKey(userName)) {
+            return;
+        }
         UserPriceAlert alert = new UserPriceAlert(userName);
         alerts.put(userName, alert);
         priceTracker.subscribe(alert);

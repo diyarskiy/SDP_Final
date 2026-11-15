@@ -1,10 +1,6 @@
 package builder;
 
-import model.CarRental;
-import model.Flight;
-import model.Hotel;
-import model.Trip;
-import model.TripRequest;
+import adapter.Flight;
 
 public class TripBuilder {
     private final TripRequest request;

@@ -1,4 +1,6 @@
-package model;
+package builder;
+
+import adapter.Flight;
 
 public class Trip {
     private final TripRequest request;

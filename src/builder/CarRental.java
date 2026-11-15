@@ -1,4 +1,4 @@
-package model;
+package builder;
 
 public class CarRental {
     private final String company;

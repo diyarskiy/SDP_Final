@@ -2,7 +2,7 @@ package strategy;
 
 import java.util.Comparator;
 import java.util.List;
-import model.Flight;
+import adapter.Flight;
 
 public class FastestStrategy implements OfferStrategy {
     @Override

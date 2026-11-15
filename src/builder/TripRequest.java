@@ -1,4 +1,4 @@
-package model;
+package builder;
 
 public class TripRequest {
     private final String destination;

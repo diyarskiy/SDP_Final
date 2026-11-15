@@ -1,4 +1,4 @@
-package model;
+package builder;
 
 public class Hotel {
     private final String name;

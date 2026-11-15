@@ -1,4 +1,4 @@
-package service;
+package facade;
 
 import decorator.Booking;
 import java.util.ArrayList;

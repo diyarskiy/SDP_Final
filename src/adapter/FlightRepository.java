@@ -1,7 +1,6 @@
 package adapter;
 
 import java.util.List;
-import model.Flight;
 
 public class FlightRepository {
     private final List<Flight> flights;

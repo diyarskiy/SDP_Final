@@ -2,7 +2,6 @@ package adapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import model.Flight;
 
 public class FlightProviderAdapter implements FlightProvider {
     private final LegacyFlightService service;
